@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { formatRupiah } from "@/lib/utils";
@@ -16,9 +16,23 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<"CASH" | "QRIS">("CASH");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
 
   const totalPrice = getTotalPrice();
   const table = tableNumber ?? (tableParam ? parseInt(tableParam) : null);
+
+  // Fix: jangan panggil router.push di render, pakai useEffect
+  useEffect(() => {
+    if (items.length === 0) {
+      setIsEmpty(true);
+    }
+  }, [items]);
+
+  useEffect(() => {
+    if (isEmpty) {
+      router.push(`/menu?table=${table}`);
+    }
+  }, [isEmpty, router, table]);
 
   const handleOrder = async () => {
     if (!table || items.length === 0) return;
@@ -39,7 +53,9 @@ export default function CheckoutPage() {
 
       if (paymentMethod === "CASH") {
         clearCart();
-        router.push(`/order-success?orderId=${res.data.order.id}&method=CASH`);
+        router.push(
+          `/order-success?orderId=${res.data.order.id}&method=CASH&table=${table}`,
+        );
       } else {
         // Midtrans Snap
         const snapToken = res.data.snapToken;
@@ -48,13 +64,13 @@ export default function CheckoutPage() {
           onSuccess: () => {
             clearCart();
             router.push(
-              `/order-success?orderId=${res.data.order.id}&method=QRIS`,
+              `/order-success?orderId=${res.data.order.id}&method=QRIS&table=${table}`,
             );
           },
           onPending: () => {
             clearCart();
             router.push(
-              `/order-success?orderId=${res.data.order.id}&method=QRIS`,
+              `/order-success?orderId=${res.data.order.id}&method=QRIS&table=${table}`,
             );
           },
           onError: () => {
@@ -72,8 +88,7 @@ export default function CheckoutPage() {
     }
   };
 
-  if (items.length === 0) {
-    router.push(`/menu?table=${table}`);
+  if (isEmpty) {
     return null;
   }
 

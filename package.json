@@ -17,8 +17,10 @@
     "midtrans-client": "^1.4.3",
     "next": "16.2.6",
     "prisma": "^5.22.0",
+    "qrcode": "^1.5.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-qr-code": "^2.0.21",
     "tailwind-merge": "^3.6.0",
     "zustand": "^5.0.13"
   },

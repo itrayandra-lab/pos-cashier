@@ -7,6 +7,7 @@ export default function OrderSuccessPage() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
   const method = searchParams.get("method");
+  const table = searchParams.get("table");
   const router = useRouter();
 
   return (
@@ -25,14 +26,22 @@ export default function OrderSuccessPage() {
             <p className="font-bold text-zinc-700">#{orderId}</p>
           </div>
         )}
-        <button
-          onClick={() =>
-            router.push(`/menu?table=${searchParams.get("table") ?? ""}`)
-          }
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-2xl transition-colors"
-        >
-          Pesan Lagi
-        </button>
+        <div className="flex flex-col gap-2 pt-1">
+          {orderId && (
+            <button
+              onClick={() => router.push(`/order-status/${orderId}`)}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-2xl transition-colors"
+            >
+              Pantau Status Pesanan
+            </button>
+          )}
+          <button
+            onClick={() => router.push(`/menu?table=${table ?? ""}`)}
+            className="w-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-semibold py-3 rounded-2xl transition-colors"
+          >
+            Pesan Lagi
+          </button>
+        </div>
       </div>
     </div>
   );
